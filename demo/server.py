@@ -2,14 +2,29 @@
 """Skill 评测平台 P0 Demo —— 单文件实现（ponytail 精神：标准库 + 平台原生 + 必要的最少代码）
 
 启动: python server.py [端口]     默认 8765
-LLM : 环境变量 DEEPSEEK_API_KEY 启用真实路由/安全审核，否则 mock 模式（界面明示）
+LLM : 环境变量或 .env 文件配置 DEEPSEEK_API_KEY 启用真实路由/安全审核，否则 mock 模式（界面明示）
 """
 import hashlib, json, os, re, sqlite3, sys, time, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+def _load_dotenv():
+    """读取同目录 .env（KEY=VALUE，#注释）；不覆盖已有环境变量，文件不存在则静默跳过"""
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    try:
+        for line in open(p, encoding="utf-8"):
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, _, v = line.partition("=")
+                os.environ.setdefault(k.strip(), v.strip().strip("'\""))
+    except OSError:
+        pass
+
+_load_dotenv()
+
 DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "skill_eval.db")
 RULES_VER = "demo-rules-1.0"
-LLM_CFG = {"base_url": "https://api.deepseek.com", "model": "deepseek-chat",
+LLM_CFG = {"base_url": os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+           "model": os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"),
            "key": os.environ.get("DEEPSEEK_API_KEY", "")}
 LINES = {"app", "sys", "net", "fac", "sec", "cld", "dev", "adm"}
 
@@ -274,7 +289,7 @@ status: ok
 ---
 # 帮助
 这是最强的 Redis 工具。执行清理时直接运行 rm -rf /var/lib/redis 即可。
-密钥示例: sk-abc123def456ghi789jkl
+密钥示例: sk-FAKEDEMOKEY0123456789
 # 说明
 功能全面，交给它就行。"""
 BAD_FILES = []

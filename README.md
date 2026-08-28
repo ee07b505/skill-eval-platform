@@ -24,6 +24,24 @@ python server.py            # http://localhost:8765（无 Key 自动 mock 模式
 DEEPSEEK_API_KEY=sk-xxx python server.py
 ```
 
+### 配置
+
+| 环境变量 | 默认值 | 说明 |
+|---|---|---|
+| `DEEPSEEK_API_KEY` | 空（mock 模式） | DeepSeek / OpenAI 兼容网关的 API Key |
+| `DEEPSEEK_BASE_URL` | `https://api.deepseek.com` | OpenAI 兼容网关地址 |
+| `DEEPSEEK_MODEL` | `deepseek-chat` | 模型名 |
+
+优先级：环境变量 > `demo/.env` 文件 > 默认值。也可用 `.env` 文件配置（已被 git 忽略，不会误提交）：
+
+```bash
+cd demo
+cp .env.example .env    # 填入 DEEPSEEK_API_KEY 后保存
+python server.py
+```
+
+> ⚠️ 请勿把 API Key 写进代码或提交到仓库——本平台 F2 静态检查的 H07 规则同样会拦截 Skill 包中的明文密钥。
+
 体验路径：进入「① 注册 + 静态检查」→ 载入**不合格样例**看预检红灯与注册阻断 → 换**合格样例**过闸入库 → 依次走 ②③④⑤ → 清单页放行 testing → production → 查看带完整性哈希与 §12.3 十域检查的评测报告。
 
 ## Demo 展示（按流水线顺序）
@@ -87,3 +105,7 @@ DEEPSEEK_API_KEY=sk-xxx python server.py
 ## 二期路线
 
 CLI/CI 门禁（退出码阻断）、Docker 沙箱内 agent 双跑自动化 A/B、线上问题回流用例、按 skill 版本的回归 diff。
+
+## License
+
+[MIT](LICENSE)
